@@ -7,3 +7,4 @@ I'll try to upload partial data for local testing but will only provide full set
 2. `rangeslider` is used to provide options to view at different timeframes but range of y-axis may be unfavourable.
 3. Should confirm latest data by matching dates instead of using e.g `iloc[-1]['Volume']`.
 4. Margins of top bar can be improved
+5. Detect increase or decrease from previous value, use red/green to indicate change direction.
