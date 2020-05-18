@@ -5,6 +5,7 @@ A dashboard has been built to display Malaysian stock movements, with data pulle
 `python 3.8`
 `pandas 1.0.3`
 `pyarrow 0.17.0`
+`dash 1.4.1`
 
 ##  To view dashboard
 1. Download data in the `inv_data` folder, download `app.py` for the dashboard build.
