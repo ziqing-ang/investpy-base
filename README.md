@@ -11,7 +11,13 @@ A dashboard has been built to display Malaysian stock movements, with data pulle
 1. Download data in the `inv_data` folder, download `app.py` for the dashboard build.
 2. If user has access to s3 bucket, can run `app.py` as is, else comment lines in `app.py` that connects to s3 bucket and uncomment lines for local testing. Make sure path points to data files correctly.
 3. Run `app.py` with `$ python app.py`. If permission error arises, try `$ sudo python app.py`.
+```
 
+```
+$ sudo python app.py
+Password:
+Running on http://127.0.0.1:8050/
+4. Depending on your computer's localhost setup, open the link in the browser. For example, in this case copy `http://127.0.0.1:8050/` and paste in browser to open.
 
 ## Known issues
 1. I've attempted to remove weekends using `rangebreak` but it's not working. Possible issue: https://github.com/plotly/dash/issues/1196
@@ -21,3 +27,4 @@ A dashboard has been built to display Malaysian stock movements, with data pulle
 5. Detect increase or decrease from previous value, use red/green to indicate change direction.
 
 ![alt image](https://github.com/ziqing-ang/investpy-base/blob/master/images/investmy_dash.png?raw=true)
+
