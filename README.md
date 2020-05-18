@@ -12,11 +12,10 @@ A dashboard has been built to display Malaysian stock movements, with data pulle
 2. If user has access to s3 bucket, can run `app.py` as is, else comment lines in `app.py` that connects to s3 bucket and uncomment lines for local testing. Make sure path points to data files correctly.
 3. Run `app.py` with `$ python app.py`. If permission error arises, try `$ sudo python app.py`.
 ```
-
-```
 $ sudo python app.py
 Password:
 Running on http://127.0.0.1:8050/
+```
 4. Depending on your computer's localhost setup, open the link in the browser. For example, in this case copy `http://127.0.0.1:8050/` and paste in browser to open.
 
 ## Known issues
