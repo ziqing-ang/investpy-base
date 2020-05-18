@@ -1,6 +1,16 @@
 # investpy-base
+A dashboard has been built to display Malaysian stock movements, with data pulled from s3 bucket accessible to permitted individuals. Partial data for local testing has been provided but only include full set of data for sectors 'Pharmaceuticals' and 'Electricity' up to 8th Feb 2020.
 
-I'll try to upload partial data for local testing but will only provide full set of data for sectors 'Pharmaceuticals' and 'Electricity' up to 8th Feb 2020.
+## Requirements
+`python 3.8`
+`pandas 1.0.3`
+`pyarrow 0.17.0`
+
+##  To view dashboard
+1. Download data in the `inv_data` folder, download `app.py` for the dashboard build.
+2. If user has access to s3 bucket, can run `app.py` as is, else comment lines in `app.py` that connects to s3 bucket and uncomment lines for local testing. Make sure path points to data files correctly.
+3. Run `app.py` with `python app.py`. If permission error arise, try `sudo python app.py`
+
 
 ## Known issues
 1. I've attempted to remove weekends using `rangebreak` but it's not working. Possible issue: https://github.com/plotly/dash/issues/1196
