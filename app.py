@@ -11,6 +11,7 @@ import boto3
 from io import BytesIO
 
 
+
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
@@ -23,7 +24,7 @@ obj = s3.get_object(
 lookup = pd.read_feather(BytesIO(obj["Body"].read()))
 
 # For local testing env
-# lookup = pd.read_feather('~/Desktop/thinkpad/greatbear/twk_tasks/investpy/inv_data/lookup.feather')
+# lookup = pd.read_feather('~/Desktop/thinkpad/greatbear/twk_tasks/investpy/dash/inv_data/lookup.feather')
 
 # Replace Nonetype in lookup file with 'Unspecified'
 lookup = lookup.fillna('Unspecified')
@@ -40,8 +41,9 @@ def get_stock_data(name):
     s_data = pd.read_feather(BytesIO(obj["Body"].read()))
     
     # For Local testing env
-#     s_path = '/Users/angziqing/Desktop/thinkpad/greatbear/twk_tasks/investpy/inv_data/'+ name + '/data.feather'
+#     s_path = '/Users/angziqing/Desktop/thinkpad/greatbear/twk_tasks/investpy/dash/inv_data/'+ name + '/data.feather'
 #     s_data = pd.read_feather(s_path)
+
     return s_data
 
 def get_sector_vol(sector_name):
@@ -72,7 +74,8 @@ app.layout = html.Div([
         html.Label("Select sector: ( Try 'Unspecified' if stock is unavailabe in selected sector. )"),
         dcc.Dropdown(
             id = 'choose_sector',
-            options=[{'label': i, 'value':i} for i in lookup['sector'].unique().tolist()],
+            options=[{'label': i, 'value':i} for i in lookup.append(pd.DataFrame({'sector':['All']})\
+                                                                    ,ignore_index=True).sector.unique().tolist()],
             value = 'Pharmaceuticals'),
         html.Label('Select stock:'),
         dcc.Dropdown(id = 'choose_stock')
@@ -118,11 +121,20 @@ app.layout = html.Div([
     [Input('choose_sector','value')])
 def set_stock_options(selected_sector):
     
-    stock_options = [{'label': i['ticker']+" "+i['counter_id'], 
-                      'value':i['ticker']} for i in\
-            lookup.loc[lookup['sector']==selected_sector].reset_index()[['ticker','counter_id']].to_dict('records')]
+    if selected_sector == 'All':
+        all_sec_list = lookup['sector'].unique().tolist()
+        stock_options = []
+        for sec in all_sec_list:
+              stock_options.extend([{'label': i['ticker']+" "+i['counter_id'],'value':i['ticker']} for i in\
+                                   lookup.loc[lookup['sector']== sec].reset_index()[['ticker','counter_id']].to_dict('records')])
+
+        return stock_options
     
-    return stock_options
+    else:
+        stock_options = [{'label': i['ticker']+" "+i['counter_id'], 'value':i['ticker']} for i in\
+                         lookup.loc[lookup['sector']==selected_sector].reset_index()[['ticker','counter_id']].to_dict('records')]
+    
+        return stock_options
 
 
 # Set first name of stock list as default stock for whichever selected sector
@@ -144,7 +156,16 @@ def set_stockname_value(available_options):
 def update_graph(ticker, selected_sector):
         
     # Get sector volume
-    sector_volume = get_sector_vol(selected_sector)
+    if selected_sector == 'All':
+        all_sec_list = lookup['sector'].unique().tolist()
+        sec_vol_list = []
+        for sec in all_sec_list:
+              sec_vol_list.append(get_sector_vol(sec))
+    
+        sector_volume = sum(sec_vol_list)
+
+    else:        
+        sector_volume = get_sector_vol(selected_sector)
     
     # Get latest closed price and volume for selected stock
     data = get_stock_data(ticker) 
@@ -152,8 +173,8 @@ def update_graph(ticker, selected_sector):
     latest_sto_vol = data.iloc[-1]['Volume']
     
     # Get stock percentage contribution of volume
-    percentage_str = str(round((latest_sto_vol)/(sector_volume),4)*100)+'%'
-
+    percentage = (latest_sto_vol)/(sector_volume)*100
+    percentage_str =  "{0:.5f}%".format(percentage)
   
     # Set up overlap graphs
     figure = plotly.subplots.make_subplots(specs=[[{"secondary_y": True}]])
