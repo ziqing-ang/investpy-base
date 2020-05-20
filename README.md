@@ -24,8 +24,7 @@ Running on http://127.0.0.1:8050/
 3. Should confirm latest data by matching dates instead of using e.g `iloc[-1]['Volume']`.
 4. Margins of top bar can be improved.
 5. Detect increase or decrease from previous value, use red/green to indicate change direction.
-
-~6. Add 'All' option in Sector selection.~
+6. ~Add 'All' option in Sector selection.~
 
 ![alt image](https://github.com/ziqing-ang/investpy-base/blob/master/images/investmy_dash.png?raw=true)
 
