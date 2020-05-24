@@ -5,7 +5,8 @@ A dashboard has been built to display Malaysian stock movements, with data pulle
 `python 3.8`,
 `pandas 1.0.3`,
 `pyarrow 0.17.0`,
-`dash 1.4.1`
+`dash 1.4.1`,
+
 
 ##  To view dashboard
 1. Download data in the `inv_data` folder, download `app.py` for the dashboard build.
@@ -25,6 +26,6 @@ Running on http://127.0.0.1:8050/
 4. Margins of top bar can be improved.
 5. Detect increase or decrease from previous value, use red/green to indicate change direction.
 6. ~Add 'All' option in Sector selection.~
+7. Dropdown selection color set to black/ alter background color.
 
-![alt image](https://github.com/ziqing-ang/investpy-base/blob/master/images/investmy_dash.png?raw=true)
-
+![alt image](https://github.com/ziqing-ang/investpy-base/blob/master/images/investmy2_dash.png?raw=true)
