@@ -19,13 +19,15 @@ Running on http://127.0.0.1:8050/
 ```
 4. Depending on your computer's localhost setup, open the link in the browser. For example, in this case copy `http://127.0.0.1:8050/` and paste in browser to open.
 
-## Known issues
+## Known issues/ Ideas
 1. I've attempted to remove weekends using `rangebreak` but it's not working. Possible issue: https://github.com/plotly/dash/issues/1196
 2. `rangeslider` is used to provide options to view at different timeframes but range of y-axis may be unfavourable.
 3. Should confirm latest data by matching dates instead of using e.g `iloc[-1]['Volume']`.
 4. Margins of top bar can be improved.
 5. Detect increase or decrease from previous value, use red/green to indicate change direction.
-6. ~Add 'All' option in Sector selection.~
+6. Add tab for graph to include candlestick chart.
 7. Dropdown selection color set to black/ alter background color.
+8. Add company information.
+9. Links to latest trading news.
 
 ![alt image](https://github.com/ziqing-ang/investpy-base/blob/master/images/investmy2_dash.png?raw=true)
