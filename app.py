@@ -1,6 +1,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 import plotly
 import numpy as np
@@ -12,7 +13,7 @@ from io import BytesIO
 
 
 
-external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+external_stylesheets = [dbc.themes.DARKLY]
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 # Retrieving lookup file from s3 bucket
@@ -58,59 +59,105 @@ def get_sector_vol(sector_name):
 ##################################################################################################
 # Layout setup
 
+navbar = dbc.Navbar(
+    [
+        dbc.Col(dbc.NavbarBrand("MY stockwatch", href="#"), sm=3, md=2),
+        dbc.Col(
+            width="auto",
+        ),
+    ],
+    color="primary",
+    dark=True,
+)
+
+card = dbc.Card(
+    [
+        dbc.CardBody(
+            [
+                html.H4("Hello bulls and bears.", className="card-title"),
+                html.P(
+                    "This is an attempt of dashboard building to show "
+                    "historical data of Malaysian stocks. Users can choose "
+                    "stocks according to sectors or just select 'All' without "
+                    "sector segregation. If the stock doesn't appear in the chosen "
+                    "sector, check if it is listed under 'Unspecified'.",
+                    className="card-text",
+                ), 
+                html.Label("Select sector: "),
+                dcc.Dropdown(
+                    id = 'choose_sector',
+                    options=[{'label': i, 'value':i} for i in lookup.append(pd.DataFrame({'sector':['All']})\
+                                                                    ,ignore_index=True).sector.unique().tolist()],
+                    value = 'Pharmaceuticals'),
+                html.Label('Select stock:'),
+                dcc.Dropdown(id = 'choose_stock')
+            ]
+        ),
+    ],
+)
+
+fig_card = dbc.CardDeck(
+    [
+        dbc.Card(
+            dbc.CardBody(
+                [
+                    html.H5("Last Closing Price (RM)", className="card-title"),
+                    html.P(id = 'sto_last_close',className='card-text'),
+                ]
+            )
+        ),
+        dbc.Card(
+            dbc.CardBody(
+                [
+                    html.H5("Last Traded Volume", className="card-title"),
+                    html.P(id = 'sto_last_vol',className='card-text'),
+                ]
+            )
+        ),
+        dbc.Card(
+            dbc.CardBody(
+                [
+                    html.H5("Sector Traded Volume", className="card-title"),
+                    html.P(id = 'sec_last_vol',className='card-text'),
+                ]
+            )
+        ),
+        dbc.Card(
+            dbc.CardBody(
+                [
+                    html.H5("% Contribution to Sector Volume", className="card-title"),
+                    html.P(id='perc_vol_contr',className='card-text'),
+                ]
+            )
+        ),
+    ]
+)
+
+graph_card = dbc.Card(
+    dbc.CardBody(
+        dcc.Graph(id='main_graph', 
+                  config={'displayModeBar': False},
+                 )
+    )
+)
+
+
 app.layout = html.Div([
     
-    # Uppermost big block: Title
     html.Div([
-        html.H1(
-            children='Malaysian Stocks by Sector',
-            style={'textAlign': 'center'}
-        )
+        navbar,
     ]),
         
-    # Second upper big block: 1. Choose Sector & Stock, 2. Top info bar
-    # 1.
-    html.Div([
-        html.Label("Select sector: ( Try 'Unspecified' if stock is unavailabe in selected sector. )"),
-        dcc.Dropdown(
-            id = 'choose_sector',
-            options=[{'label': i, 'value':i} for i in lookup.append(pd.DataFrame({'sector':['All']})\
-                                                                    ,ignore_index=True).sector.unique().tolist()],
-            value = 'Pharmaceuticals'),
-        html.Label('Select stock:'),
-        dcc.Dropdown(id = 'choose_stock')
-    ], 
-        style={'width': '20%', 'display': 'inline-block','padding': '0px 50px 0px 20px'}), #padding: 't','r','b','l'
-    
-    # 2.
-    html.Div([
-        html.H4(children = "Last Closing Price (RM):"),
-        html.H4(id = 'sto_last_close')
-    ],
-        style={'width': '14%', 'display': 'inline-block','textAlign':'center'}),
+    html.Div([dbc.Row([
+        dbc.Col(card,width=3),
+        dbc.Col(
+            dbc.Row([
+                dbc.Col(fig_card,width=11), 
+                dbc.Col(graph_card,width=11)
+            ])
+        )
+    ])]), 
 
-    html.Div([
-        html.H4(children = "Last Traded Volume:"),
-        html.H4(id = 'sto_last_vol'),
-    ], 
-        style={'width': '14%', 'display': 'inline-block','textAlign':'center', 'padding': '0px 20px 0px 0px'}),
-       
-    html.Div([
-        html.H4(children = "Sector Traded Volume:"),
-        html.H4(id = 'sec_last_vol', children = get_sector_vol('Pharmaceuticals')),
-    ], 
-        style={'width': '14%', 'display': 'inline-block','textAlign':'center','padding': '0px 30px 0px 0px'}),
-     
-    html.Div([
-        html.H4(children = "% Contribution to Sector Volume:"),
-        html.H4(id='perc_vol_contr',
-            children = str(round((get_stock_data("APER").iloc[-1]['Volume'])/(get_sector_vol('Pharmaceuticals')),4)*100)+'%'),
-    ], 
-        style={'width': '17%', 'display': 'inline-block','textAlign':'center'}),
-    
-    # Third block: Figure
-    dcc.Graph(id='main_graph', 
-              config={'displayModeBar': False})
 ])
 ###################################################################################################
 # Callbacks
@@ -214,11 +261,12 @@ def update_graph(ticker, selected_sector):
                         ]
                        )
     figure.update_layout(
-        autosize=False,
-        height=380,
-        width = 1400,
-        margin=dict(l=80,r=0,b=0,t=50,pad=0),
-        legend=dict(x=0.8, y=1.3))
+        autosize=True,
+#         height=380,
+#         width = 850,
+        margin=dict(l=55,r=15,b=50,t=50,pad=0),
+        legend=dict(x=0.7, y=1.05,orientation='h'),
+    )
     
     return([latest_sto_close,latest_sto_vol,sector_volume,percentage_str,figure])
 
