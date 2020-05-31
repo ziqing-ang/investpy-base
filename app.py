@@ -2,6 +2,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+import investpy
 import plotly.graph_objs as go
 import plotly
 import numpy as np
@@ -82,15 +83,20 @@ card = dbc.Card(
                     "sector segregation. If the stock doesn't appear in the chosen "
                     "sector, check if it is listed under 'Unspecified'.",
                     className="card-text",
-                ), 
-                html.Label("Select sector: "),
-                dcc.Dropdown(
-                    id = 'choose_sector',
-                    options=[{'label': i, 'value':i} for i in lookup.append(pd.DataFrame({'sector':['All']})\
-                                                                    ,ignore_index=True).sector.unique().tolist()],
-                    value = 'Pharmaceuticals'),
-                html.Label('Select stock:'),
-                dcc.Dropdown(id = 'choose_stock')
+                ),
+                dbc.CardBody([
+                    html.Label("Select sector: "),
+                    dcc.Dropdown(
+                        id = 'choose_sector', 
+                        style={'color':'black'},
+                        options=[{'label': i, 'value':i} for i in lookup.append(pd.DataFrame({'sector':['All']})\
+                                                                        ,ignore_index=True).sector.unique().tolist()],
+                        value = 'Pharmaceuticals'),
+                    html.Label('Select stock:'),                
+                    dcc.Dropdown(id = 'choose_stock',style={'color':'black'}),
+                ]),
+                html.P("Company information:", className='card-text'),
+                html.P(id = 'company_info')
             ]
         ),
     ],
@@ -109,7 +115,7 @@ fig_card = dbc.CardDeck(
         dbc.Card(
             dbc.CardBody(
                 [
-                    html.H5("Last Traded Volume", className="card-title"),
+                    html.H5("Stock Last Traded Volume", className="card-title"),
                     html.P(id = 'sto_last_vol',className='card-text'),
                 ]
             )
@@ -117,7 +123,7 @@ fig_card = dbc.CardDeck(
         dbc.Card(
             dbc.CardBody(
                 [
-                    html.H5("Sector Traded Volume", className="card-title"),
+                    html.H5("Sector Last Traded Volume", className="card-title"),
                     html.P(id = 'sec_last_vol',className='card-text'),
                 ]
             )
@@ -152,8 +158,8 @@ app.layout = html.Div([
         dbc.Col(card,width=3),
         dbc.Col(
             dbc.Row([
-                dbc.Col(fig_card,width=11), 
-                dbc.Col(graph_card,width=11)
+                dbc.Col(fig_card,width={"size": 11, }), 
+                dbc.Col(dbc.Tabs([dbc.Tab(graph_card, label='Vanilla')]), width=11)
             ])
         )
     ])]), 
@@ -193,7 +199,8 @@ def set_stockname_value(available_options):
 
 # Stock level
 @app.callback(
-    [Output('sto_last_close','children'), 
+    [Output('company_info','children'),
+     Output('sto_last_close','children'), 
      Output('sto_last_vol', 'children'),
      Output('sec_last_vol', 'children'),
      Output('perc_vol_contr', 'children'),     
@@ -201,6 +208,9 @@ def set_stockname_value(available_options):
     [Input('choose_stock','value'), 
      Input('choose_sector','value')])
 def update_graph(ticker, selected_sector):
+    
+    # Get company info
+    company_info = investpy.get_stock_company_profile(ticker, country='malaysia')['desc']
         
     # Get sector volume
     if selected_sector == 'All':
@@ -268,7 +278,7 @@ def update_graph(ticker, selected_sector):
         legend=dict(x=0.7, y=1.05,orientation='h'),
     )
     
-    return([latest_sto_close,latest_sto_vol,sector_volume,percentage_str,figure])
+    return([company_info,latest_sto_close,latest_sto_vol,sector_volume,percentage_str,figure])
 
 
 if __name__ == '__main__':
