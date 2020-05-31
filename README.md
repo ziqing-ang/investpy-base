@@ -23,11 +23,9 @@ Running on http://127.0.0.1:8050/
 1. I've attempted to remove weekends using `rangebreak` but it's not working. Possible issue: https://github.com/plotly/dash/issues/1196
 2. `rangeslider` is used to provide options to view at different timeframes but range of y-axis may be unfavourable.
 3. Should confirm latest data by matching dates instead of using e.g `iloc[-1]['Volume']`.
-4. Margins of top bar can be improved.
-5. Detect increase or decrease from previous value, use red/green to indicate change direction.
-6. Add tab for graph to include candlestick chart.
-7. Dropdown selection color set to black/ alter background color.
-8. Add company information.
-9. Links to latest trading news.
+4. Detect increase or decrease from previous value, use red/green to indicate change direction.
+5. Add candlestick chart in place/ add chart in another tab.
+6. Links to latest trading news.
+7. Add additional historical price/decision making analyses.
 
-![alt image](https://github.com/ziqing-ang/investpy-base/blob/master/images/investmy2_dash.png?raw=true)
+![alt image](https://github.com/ziqing-ang/investpy-base/blob/master/images/investmy3_dash.png?raw=true)
